@@ -5,6 +5,7 @@
 
 
 #define NUMBER unsigned long int
+#define SYMBOL unsigned int
 
 NUMBER k_bin[25];
 
@@ -35,7 +36,7 @@ int make_substrings(int n, struct substring list[])
     return s;
 }
 
-NUMBER construct(struct substring *substr, unsigned int symbols[])
+NUMBER construct(struct substring *substr, SYMBOL symbols[])
 {
     NUMBER value = 0;
 
@@ -72,9 +73,11 @@ void print_substrings(struct substring list[], int count)
 }
 
 
+NUMBER substring_usage_count = 0;
 
-void filter(struct substring list[], int ssi, int list_length, unsigned int d, unsigned int div_count, unsigned int symbols[])
+void filter(struct substring list[], int ssi, int list_length, unsigned int d, unsigned int div_count, SYMBOL symbols[])
 {
+    substring_usage_count += 1;
     // printf("Filter(%d:%d) %u %u : ", ssi, list_length, d, div_count);
     // print_substr(&list[ssi]);
 
@@ -82,7 +85,7 @@ void filter(struct substring list[], int ssi, int list_length, unsigned int d, u
     int substr_len = list[ssi].length;
 
     #ifdef PROGRESS
-    if ((substr_len == 1) && (substr_i < 8))
+    if ((substr_len == 1) && (substr_i < 6))
     {
         int m = 0;
         fprintf(stdout, "> ");
@@ -157,7 +160,7 @@ int main(int argc, char *argv[])
 {
     struct substring substrings[200];
 
-    unsigned int symbols[25];
+    SYMBOL symbols[25];
     int i;
     for (i=0; i<25; i++)
     {
@@ -182,6 +185,7 @@ int main(int argc, char *argv[])
     unsigned int k;
     for (k=k0; k<=k1; k++)
     {
+        substring_usage_count = 0;
         k_bin[k] = 0;
         unsigned int substring_count = make_substrings(k, substrings);
         // print_substrings(substrings, substring_count);
@@ -189,7 +193,8 @@ int main(int argc, char *argv[])
         filter(substrings, 0, substring_count, k, 0, symbols);
 
         total += k_bin[k];
-        printf("[%u, %lu, %lu]\n", k, k_bin[k], total);
+        // printf("[%u, %lu, %lu] %lu\n", k, k_bin[k], total, substring_usage_count);
+        printf("%u %lu %lu %lu\n", k, k_bin[k], total, substring_usage_count);
     }
 
     return 0;
